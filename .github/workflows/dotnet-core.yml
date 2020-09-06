@@ -18,8 +18,8 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore matrix_multiplication
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build matrix_multiplication --configuration Release --no-restore
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test matrix_multiplication --no-restore --verbosity normal
