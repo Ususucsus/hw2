@@ -12,16 +12,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Inject slug/short variables
-      uses: rlespinasse/github-slug-action@v2.x
+    - uses: mdecoleman/pr-branch-name@1.0.0
+      id: vars
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - run: echo ${{ steps.vars.outputs.branch }}
     - uses: actions/checkout@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.301
     - name: Install dependencies
-      run: dotnet restore ${{ env.GITHUB_REF_SLUG }}
+      run: dotnet restore ${{ steps.vars.outputs.branch }}
     - name: Build
-      run: dotnet build --configuration Release --no-restore ${{ env.GITHUB_REF_SLUG }}
+      run: dotnet build --configuration Release --no-restore ${{ steps.vars.outputs.branch }}
     - name: Test
-      run: dotnet test --no-restore --verbosity normal ${{ env.GITHUB_REF_SLUG }}
+      run: dotnet test --no-restore --verbosity normal ${{ steps.vars.outputs.branch }}
+
