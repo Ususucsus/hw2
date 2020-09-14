@@ -14,8 +14,6 @@ jobs:
     steps:
     - name: Inject slug/short variables
       uses: rlespinasse/github-slug-action@v2.x
-    - name: Print slug/short variables
-      run: echo "   ref        : ${{ env.GITHUB_REF_SLUG }}"
     - uses: actions/checkout@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
