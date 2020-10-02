@@ -32,16 +32,15 @@ namespace SimpleFTP
                     using var reader = new StreamReader(stream);
                     await using var writer = new StreamWriter(stream);
                     
-                    while (true)
-                    {
-                        var inputData = await reader.ReadLineAsync() ?? string.Empty;
-                        Console.WriteLine(inputData);
+                    var inputData = await reader.ReadLineAsync() ?? string.Empty;
+                    Console.WriteLine(inputData);
 
-                        var result = await controller.GetResponse(inputData);
+                    var result = await controller.GetResponse(inputData);
 
-                        await writer.WriteLineAsync(result);
-                        await writer.FlushAsync();
-                    }
+                    await writer.WriteLineAsync(result);
+                    await writer.FlushAsync();
+                    
+                    socket.Close();
                 });
             }
         }

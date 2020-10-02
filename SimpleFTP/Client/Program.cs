@@ -12,20 +12,12 @@ namespace Client
             using var client = new TcpClient("localhost", 6666);
             var stream = client.GetStream();
 
-            while (true)
-            {
-                Console.Write("> ");
-                var command = Console.ReadLine();
+            Console.Write("> ");
+            var command = Console.ReadLine();
 
-                if (command == "exit")
-                {
-                    break;
-                }
-                
-                await Send(command, stream);
-                var response = await Read(stream);
-                Console.WriteLine($"Server: {response}");
-            }
+            await Send(command, stream);
+            var response = await Read(stream);
+            Console.WriteLine($"Server: {response}");
             
             client.Close();
         }
