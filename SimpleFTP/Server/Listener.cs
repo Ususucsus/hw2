@@ -28,17 +28,20 @@ namespace SimpleFTP
                 Task.Run(async () =>
                 {
                     var stream = new NetworkStream(socket);
-                    var reader = new StreamReader(stream);
-                    var inputData = await reader.ReadLineAsync() ?? string.Empty;
-
                     var controller = new Controller();
-                    var result = await controller.GetResponse(inputData);
+                    using var reader = new StreamReader(stream);
+                    await using var writer = new StreamWriter(stream);
                     
-                    var writer = new StreamWriter(stream);
-                    await writer.WriteAsync(result);
-                    await writer.FlushAsync();
-                    
-                    socket.Close();
+                    while (true)
+                    {
+                        var inputData = await reader.ReadLineAsync() ?? string.Empty;
+                        Console.WriteLine(inputData);
+
+                        var result = await controller.GetResponse(inputData);
+
+                        await writer.WriteLineAsync(result);
+                        await writer.FlushAsync();
+                    }
                 });
             }
         }
