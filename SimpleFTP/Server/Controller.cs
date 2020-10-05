@@ -1,79 +1,51 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SimpleFTP.Responses;
 
 namespace SimpleFTP
 {
-    public class Controller
+    public static class Controller
     {
-        public async Task<string> GetResponse(string inputData)
-        {
-            if (inputData.Length == 0) return string.Empty;
-
-            switch (inputData[0])
-            {
-                case '1':
-                {
-                    try
-                    {
-                        var path = inputData.Split()[1];
-                        return ListCommand(path);
-                    }
-                    catch (IndexOutOfRangeException)
-                    {
-                        return string.Empty;
-                    }
-                }
-                case '2':
-                {
-                    try
-                    {
-                        var path = inputData.Split()[1];
-                        return await GetCommand(path);
-                    }
-                    catch (IndexOutOfRangeException)
-                    {
-                        return string.Empty;
-                    }
-                }
-                default:
-                    return string.Empty;
-            }
-        }
-
-        private string ListCommand(string path)
+        public static async Task ListCommand(string path, StreamWriter writer)
         {
             if (!Directory.Exists(path))
             {
-                return "-1";
+                await writer.WriteLineAsync("-1");
+                await writer.FlushAsync();
+                return;
             }
 
             var files = Directory.GetFiles(path);
             var directories = Directory.GetDirectories(path);
 
             var response = new ListCommandResponse(
-                files.Select(file => new FileResponse(file, false)).Concat(
-                    directories.Select(directory => new FileResponse(directory, true))
-                ).ToList()
+                files.Select(file => new FileResponse(file, false))
+                    .Concat(directories.Select(directory => new FileResponse(directory, true)))
+                    .ToList()
             );
 
-            return response.ToString();
+            await writer.WriteLineAsync(response.ToString());
+            await writer.FlushAsync();
         }
 
-        private async Task<string> GetCommand(string path)
+        public static async Task GetCommand(string path, StreamWriter writer)
         {
             if (!File.Exists(path))
             {
-                return "-1";
+                await writer.WriteLineAsync("-1");
+                await writer.FlushAsync();
+                return;
             }
-            
-            var content = await File.ReadAllBytesAsync(path);
-            
-            var response = new GetCommandResponse(content);
 
-            return response.ToString();
+            var stream = File.OpenRead(path);
+            await stream.CopyToAsync(writer.BaseStream);
+        }
+
+        public static async Task HandleInvalidCommand(StreamWriter writer)
+        {
+            await writer.WriteLineAsync("invalid command");
+            await writer.FlushAsync();
         }
     }
 }
