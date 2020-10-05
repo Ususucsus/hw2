@@ -5,8 +5,20 @@ using System.Threading.Tasks;
 
 namespace SimpleFTP
 {
+    /// <summary>
+    /// Represents class for handle requests.
+    /// </summary>
     public static class RequestHandler
     {
+        /// <summary>
+        /// Handles request.
+        /// </summary>
+        /// <remarks>
+        /// This method route to specific controller by digit at first position in input line.
+        /// If there is no controller for specified digit or digit is not specified calls HandleInvalidCommand controller method.
+        /// </remarks>
+        /// <param name="stream">Request network stream.</param>
+        /// <returns>Task.</returns>
         public static async Task Handle(NetworkStream stream)
         {
             using var reader = new StreamReader(stream);
