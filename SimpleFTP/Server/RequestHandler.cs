@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Sockets;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 
 namespace SimpleFTP
@@ -19,10 +20,10 @@ namespace SimpleFTP
         /// </remarks>
         /// <param name="stream">Request network stream.</param>
         /// <returns>Task.</returns>
-        public static async Task Handle(NetworkStream stream)
+        public static async Task Handle(Stream stream)
         {
-            using var reader = new StreamReader(stream);
-            await using var writer = new StreamWriter(stream);
+            using var reader = new StreamReader(stream, leaveOpen: true);
+            await using var writer = new StreamWriter(stream, leaveOpen: true);
 
             var inputData = await reader.ReadLineAsync() ?? string.Empty;
 
