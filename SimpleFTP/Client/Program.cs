@@ -8,11 +8,35 @@ namespace Client
     {
         public static async Task Main(string[] args)
         {
-            var ftp = new FtpServer("localhost", 6666);
-            //Console.WriteLine(await ftp.List("./test"));
-            var file = File.CreateText("T.txt");
-            await ftp.Get("./test/test.txt", file.BaseStream);
-            file.Close();
+            Console.WriteLine("enter command");
+            var command = Console.ReadLine();
+
+            switch (command)
+            {
+                case "list":
+                {
+                    Console.WriteLine("enter path");
+                    var path = Console.ReadLine();
+                    var ftp = new FtpServer("localhost", 6666);
+                    Console.WriteLine(await ftp.List(path));
+                    break;
+                }
+                case "get":
+                {
+                    Console.WriteLine("enter server path");
+                    var path = Console.ReadLine();
+                    Console.WriteLine("enter file path");
+                    var filePath = Console.ReadLine();
+                    var ftp = new FtpServer("localhost", 6666);
+                    var file = File.Create(filePath);
+                    await ftp.Get(path, file);
+                    file.Close();
+                    break;
+                }
+                default:
+                    Console.WriteLine("invalid command");
+                    break;
+            }
         }
     }
 }

@@ -63,9 +63,11 @@ namespace SimpleFTP
                 return;
             }
 
-            await using var stream = File.OpenRead(path);
-            await writer.WriteAsync(stream.Length.ToString() + " ");
+            var fileInfo = new FileInfo(path);
+            await writer.WriteAsync(fileInfo.Length + " ");
             await writer.FlushAsync();
+            
+            await using var stream = File.OpenRead(path);
             await stream.CopyToAsync(writer.BaseStream);
         }
 

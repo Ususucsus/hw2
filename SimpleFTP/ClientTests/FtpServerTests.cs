@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Client;
-using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
 using SimpleFTP;
 
@@ -33,19 +30,13 @@ namespace ClientTests
         [Test]
         public async Task FtpServerListCommandShouldWork()
         {
-            var expectedResult = new ListResponse(new List<FileResponse>()
-            {
-                new FileResponse(Path.Combine(Directory.GetCurrentDirectory(), "test", "file.txt"), false),
-                new FileResponse(Path.Combine(Directory.GetCurrentDirectory(), "test", "dir"), true)
-            }, 2);
-            
             File.Create(Path.Combine(Directory.GetCurrentDirectory(), "test", "file.txt")).Close();
             Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "test", "dir"));
             
             var result = await ftp.List(Path.Combine(Directory.GetCurrentDirectory(), "test"));
             
             Assert.NotNull(result);
-            Assert.AreEqual(expectedResult.NumberOfFiles, result.NumberOfFiles);
+            Assert.AreEqual(2, result.NumberOfFiles);
             Assert.That(
                 (result.Files[0].FileName == Path.Combine(Directory.GetCurrentDirectory(), "test", "file.txt") &&
                  result.Files[0].IsDirectory == false) ||
