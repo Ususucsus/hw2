@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using TestRunner.Attributes;
 using TestRunner.RunResultModel;
 
@@ -16,6 +18,11 @@ namespace TestRunner
         /// Run result object.
         /// </summary>
         private readonly RunResult result = new RunResult();
+
+        /// <summary>
+        /// Lock object.
+        /// </summary>
+        private readonly object lockObject = new object();
 
         /// <summary>
         /// Runs all test fixtures from assemblies located at specified path.
@@ -49,10 +56,13 @@ namespace TestRunner
             
             var testFixtures = AssembliesParser.GetTextFixtureClasses(assembly);
 
+            var tasks = new List<Task>();
             foreach (var testFixture in testFixtures)
             {
-                RunTestFixture(testFixture, assemblyRunResult);
+                var task = Task.Run(() => RunTestFixture(testFixture, assemblyRunResult));
+                tasks.Add(task);
             }
+            Task.WaitAll(tasks.ToArray());
 
             if (assemblyRunResult.TotalTests > 0)
             {
@@ -87,7 +97,10 @@ namespace TestRunner
             
             if (fixtureRunResult.TotalTests > 0)
             {
-                assemblyRunResult.AddFixtureRunResult(fixtureRunResult);
+                lock (lockObject)
+                {
+                    assemblyRunResult.AddFixtureRunResult(fixtureRunResult);
+                }
             }
         }
 

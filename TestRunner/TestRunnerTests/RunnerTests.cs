@@ -31,11 +31,15 @@ namespace TestRunnerTests
         [Test]
         public void RunAllTestsResultShouldContainResultForAssembly()
         {
-            var result = runner.RunAllTests(dllsForTestsDirectory);
-            
-            Assert.AreEqual(1, result.AssemblyRunResults.Count);
-            Assert.AreEqual(ExpectedTotalTestNumber, result.TotalTests);
-            Assert.AreNotEqual(TimeSpan.Zero, result.RunningTime);
+            for (var i = 0; i < 1000; i++)
+            {
+                var lRunner = new Runner();
+                var result = lRunner.RunAllTests(dllsForTestsDirectory);
+
+                Assert.AreEqual(1, result.AssemblyRunResults.Count);
+                Assert.AreEqual(ExpectedTotalTestNumber, result.TotalTests);
+                Assert.AreNotEqual(TimeSpan.Zero, result.RunningTime);
+            }
         }
 
         [Test]
